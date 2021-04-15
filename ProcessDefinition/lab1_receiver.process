@@ -15,7 +15,7 @@
             <PermittedMessageType>Text</PermittedMessageType>
             <SessionAttributes>
                 <transacted>false</transacted>
-                <acknowledgeMode>1</acknowledgeMode>
+                <acknowledgeMode>2</acknowledgeMode>
                 <maxSessions>1</maxSessions>
                 <destination>transport</destination>
             </SessionAttributes>
@@ -24,12 +24,12 @@
                 <JMSExpiration>0</JMSExpiration>
                 <JMSPriority>4</JMSPriority>
             </ConfigurableHeaders>
-            <ConnectionReference>/ConnectionsLab2/JMS Connection.sharedjmscon</ConnectionReference>
+            <ConnectionReference>/ConnectionsLab1/JMS Connection.sharedjmscon</ConnectionReference>
         </config>
         <pd:inputBindings/>
     </pd:starter>
     <pd:endName>End</pd:endName>
-    <pd:endX>969</pd:endX>
+    <pd:endX>1084</pd:endX>
     <pd:endY>184</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
@@ -37,8 +37,8 @@
     <pd:activity name="Parse XML">
         <pd:type>com.tibco.plugin.xml.XMLParseActivity</pd:type>
         <pd:resourceType>ae.activities.XMLParseActivity</pd:resourceType>
-        <pd:x>392</pd:x>
-        <pd:y>188</pd:y>
+        <pd:x>243</pd:x>
+        <pd:y>184</pd:y>
         <config>
             <inputStyle>text</inputStyle>
             <xsdVersion>default</xsdVersion>
@@ -54,8 +54,8 @@
     <pd:activity name="Create CSV File">
         <pd:type>com.tibco.plugin.file.FileCreateActivity</pd:type>
         <pd:resourceType>ae.activities.FileCreateActivity</pd:resourceType>
-        <pd:x>550</pd:x>
-        <pd:y>187</pd:y>
+        <pd:x>578</pd:x>
+        <pd:y>186</pd:y>
         <config>
             <overwrite>true</overwrite>
         </config>
@@ -90,7 +90,7 @@
     <pd:activity name="LoggingProcess">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>248</pd:x>
+        <pd:x>456</pd:x>
         <pd:y>186</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
@@ -101,7 +101,7 @@
                     <xsl:value-of select="concat(&quot;Lab1 receiver- &quot;,$_processContext/ns3:ProcessContext/ProcessId ,&quot; - &quot;, tib:timestamp())"/>
                 </ns12:idtech>
                 <ns12:idfonc>
-                    <xsl:value-of select="concat(&quot;Client-unkown - &quot;,tib:timestamp())"/>
+                    <xsl:value-of select="concat(&quot;Client - &quot;,$Parse-XML/pfx:client/pfx:id_client,&quot; - &quot;,tib:timestamp())"/>
                 </ns12:idfonc>
                 <ns12:status>
                     <xsl:value-of select="&quot;initial&quot;"/>
@@ -115,8 +115,8 @@
     <pd:activity name="Logging Errors">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>968</pd:x>
-        <pd:y>333</pd:y>
+        <pd:x>949</pd:x>
+        <pd:y>315</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -126,7 +126,7 @@
                     <xsl:value-of select="concat(&quot;Lab1receiver - &quot;,$_processContext/ns3:ProcessContext/ProcessId,&quot; - &quot;, tib:timestamp())"/>
                 </ns12:idtech>
                 <ns12:idfonc>
-                    <xsl:value-of select="concat(&quot;Client-unkown - &quot;,string(tib:timestamp()) )"/>
+                    <xsl:value-of select="concat(&quot;Client-&quot;,$ClientiD/pfx:id_client,&quot;-&quot;,string(tib:timestamp()) )"/>
                 </ns12:idfonc>
                 <ns12:status>
                     <xsl:value-of select="&quot;error&quot;"/>
@@ -140,8 +140,8 @@
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>1155</pd:x>
-        <pd:y>329</pd:y>
+        <pd:x>601</pd:x>
+        <pd:y>312</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -162,7 +162,7 @@
                     <xsl:value-of select="concat(&quot;Lab1 receiver- &quot;,$_processContext/ns3:ProcessContext/ProcessId,&quot; - &quot;, tib:timestamp())"/>
                 </ns12:idtech>
                 <ns12:idfonc>
-                    <xsl:value-of select="concat(&quot;Client-unkown - &quot;,string(tib:timestamp()) )"/>
+                    <xsl:value-of select="concat(&quot;Client - &quot;,$Parse-XML/pfx:client/pfx:id_client,&quot; - &quot;,string(tib:timestamp()) )"/>
                 </ns12:idfonc>
                 <ns12:status>
                     <xsl:value-of select="&quot;success&quot;"/>
@@ -173,16 +173,54 @@
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="Confirm">
+        <pd:type>com.tibco.pe.core.ConfirmActivity</pd:type>
+        <pd:resourceType>activity.confirm</pd:resourceType>
+        <pd:x>959</pd:x>
+        <pd:y>182</pd:y>
+        <config>
+            <ConfirmEvent>JMS Queue Receiver</ConfirmEvent>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="ClientiD">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>789</pd:x>
+        <pd:y>315</pd:y>
+        <config>
+            <variableConfig>/SharedVars/clientID.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="SetVariable">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>338</pd:x>
+        <pd:y>186</pd:y>
+        <config>
+            <showResult>true</showResult>
+            <variableConfig>/SharedVars/clientID.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <pfx:id_client>
+                <xsl:value-of select="$Parse-XML/pfx:client/pfx:id_client"/>
+            </pfx:id_client>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Confirm2">
+        <pd:type>com.tibco.pe.core.ConfirmActivity</pd:type>
+        <pd:resourceType>activity.confirm</pd:resourceType>
+        <pd:x>1080</pd:x>
+        <pd:y>315</pd:y>
+        <config>
+            <ConfirmEvent>JMS Queue Receiver</ConfirmEvent>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
     <pd:transition>
         <pd:from>JMS Queue Receiver</pd:from>
-        <pd:to>LoggingProcess</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>Parse XML</pd:from>
-        <pd:to>Create CSV File</pd:to>
+        <pd:to>Parse XML</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -202,29 +240,64 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>LoggingProcess</pd:from>
-        <pd:to>Parse XML</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
         <pd:from>Catch</pd:from>
-        <pd:to>Logging Errors</pd:to>
+        <pd:to>ClientiD</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>Logging Errors</pd:from>
-        <pd:to>End</pd:to>
+        <pd:to>Confirm2</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>Log success End of process</pd:from>
+        <pd:to>Confirm</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Confirm</pd:from>
         <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LoggingProcess</pd:from>
+        <pd:to>Create CSV File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse XML</pd:from>
+        <pd:to>SetVariable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ClientiD</pd:from>
+        <pd:to>Logging Errors</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Confirm2</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SetVariable</pd:from>
+        <pd:to>LoggingProcess</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

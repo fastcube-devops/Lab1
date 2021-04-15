@@ -179,7 +179,7 @@ tablecount=0&#xD;
                     <JMSPriority>4</JMSPriority>
                 </ConfigurableHeaders>
                 <DeliveryDelay>0</DeliveryDelay>
-                <ConnectionReference>/ConnectionsLab2/JMS Connection.sharedjmscon</ConnectionReference>
+                <ConnectionReference>/ConnectionsLab1/JMS Connection.sharedjmscon</ConnectionReference>
             </config>
             <pd:inputBindings>
                 <ns0:ActivityInput xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/jms">
