@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx="http://www.tibco.com/schemas/lab1/Schema/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:ns2="http://www.tibco.com/pe/DeployedVarsType" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:ns4="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:ns3="http://www.tibco.com/pe/EngineTypes">
+    <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/lab1/Schema/Schema.xsd" schemaLocation="/Schema/SchemaClient.xsd"/>
+    <pd:name>ProcessDefinitions/AddClientFile.process</pd:name>
+    <pd:startName>JMS Queue Receiver data client</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="JMS Queue Receiver data client">
+        <pd:type>com.tibco.plugin.jms.JMSQueueEventSource</pd:type>
+        <pd:resourceType>ae.activities.JMSQueueEventSource</pd:resourceType>
+        <pd:x>85</pd:x>
+        <pd:y>101</pd:y>
+        <config>
+            <PermittedMessageType>XML Text</PermittedMessageType>
+            <SessionAttributes>
+                <transacted>false</transacted>
+                <acknowledgeMode>2</acknowledgeMode>
+                <maxSessions>1</maxSessions>
+                <destination>transport</destination>
+            </SessionAttributes>
+            <ConfigurableHeaders>
+                <JMSDeliveryMode>PERSISTENT</JMSDeliveryMode>
+                <JMSExpiration>0</JMSExpiration>
+                <JMSPriority>4</JMSPriority>
+            </ConfigurableHeaders>
+            <ConnectionReference>/Connections/Connection_JMS.sharedjmscon</ConnectionReference>
+            <OutDataxsdString ref="pfx:infoClient"/>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1113</pd:endX>
+    <pd:endY>259</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1618392129951</pd:targetNamespace>
+    <pd:activity name="remplir fichier">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>546</pd:x>
+        <pd:y>93</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+        </config>
+        <pd:inputBindings>
+            <ns1:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="$creer-fichier-csv/ns1:CreateActivityOutputClass/fileInfo/fullName"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="concat($JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:prenom, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:adresse,',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:profession, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_ajout, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom_fichier, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_update, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:flag)"/>
+                </textContent>
+            </ns1:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Update client">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>749</pd:x>
+        <pd:y>93</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/Connections/DB_Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>update clients set date_update = Current_date , flag = 'N'</statement>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="creer fichier csv">
+        <pd:type>com.tibco.plugin.file.FileCreateActivity</pd:type>
+        <pd:resourceType>ae.activities.FileCreateActivity</pd:resourceType>
+        <pd:x>257</pd:x>
+        <pd:y>91</pd:y>
+        <config>
+            <createMissingDirectories>false</createMissingDirectories>
+            <overwrite>true</overwrite>
+        </config>
+        <pd:inputBindings>
+            <ns1:CreateActivityInputClass>
+                <fileName>
+                    <xsl:value-of select="concat($_globalVariables/ns2:GlobalVariables/lab/RepertoireCible,$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom,'_',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:prenom,'_',translate($JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_ajout, '-', ''),'_', $JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client,'.','csv')"/>
+                </fileName>
+            </ns1:CreateActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LoggingSuccess">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1108</pd:x>
+        <pd:y>93</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns4:LogInfo>
+                <ns4:idtech>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns4:idtech>
+                <ns4:idfonc>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                </ns4:idfonc>
+                <ns4:status>
+                    <xsl:value-of select="'success'"/>
+                </ns4:status>
+                <ns4:logmessage>
+                    <xsl:value-of select="'N/A'"/>
+                </ns4:logmessage>
+            </ns4:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="loggingError">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>954</pd:x>
+        <pd:y>186</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns4:LogInfo>
+                <ns4:idtech>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns4:idtech>
+                <ns4:idfonc>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                </ns4:idfonc>
+                <ns4:status>
+                    <xsl:value-of select="'echec'"/>
+                </ns4:status>
+                <ns4:logmessage>
+                    <xsl:value-of select="$_error/ns3:ErrorReport/Msg"/>
+                </ns4:logmessage>
+            </ns4:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="initLogClient">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>394</pd:x>
+        <pd:y>90</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns4:LogInfo>
+                <ns4:idtech>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns4:idtech>
+                <ns4:idfonc>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                </ns4:idfonc>
+                <ns4:status>
+                    <xsl:value-of select="'init'"/>
+                </ns4:status>
+                <ns4:logmessage>
+                    <xsl:value-of select="'N/A'"/>
+                </ns4:logmessage>
+            </ns4:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1111</pd:x>
+        <pd:y>546</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="logging">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1112</pd:x>
+        <pd:y>414</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns4:LogInfo/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Confirm">
+        <pd:type>com.tibco.pe.core.ConfirmActivity</pd:type>
+        <pd:resourceType>activity.confirm</pd:resourceType>
+        <pd:x>1278</pd:x>
+        <pd:y>96</pd:y>
+        <config>
+            <ConfirmEvent>JMS Queue Receiver data client</ConfirmEvent>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Generate Error">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>551</pd:x>
+        <pd:y>267</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns5:ActivityInput>
+                <message>
+                    <xsl:value-of select="$_error/ns3:ErrorReport/Msg"/>
+                </message>
+                <xsl:if test="$_error/ns3:ErrorReport/MsgCode">
+                    <messageCode>
+                        <xsl:value-of select="$_error/ns3:ErrorReport/MsgCode"/>
+                    </messageCode>
+                </xsl:if>
+            </ns5:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch-1">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>944</pd:x>
+        <pd:y>409</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <fault>localname=FileIOException namespace=http://schemas.tibco.com/bw/plugins/file/5.0/fileExceptions</fault>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>remplir fichier</pd:from>
+        <pd:to>Update client</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JMS Queue Receiver data client</pd:from>
+        <pd:to>creer fichier csv</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Update client</pd:from>
+        <pd:to>LoggingSuccess</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LoggingSuccess</pd:from>
+        <pd:to>Confirm</pd:to>
+        <pd:xpathDescription>succes</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Update client</pd:from>
+        <pd:to>loggingError</pd:to>
+        <pd:xpathDescription>error</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>loggingError</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>creer fichier csv</pd:from>
+        <pd:to>initLogClient</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initLogClient</pd:from>
+        <pd:to>remplir fichier</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>logging</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>logging</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Confirm</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>remplir fichier</pd:from>
+        <pd:to>Generate Error</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch-1</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
