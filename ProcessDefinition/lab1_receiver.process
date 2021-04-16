@@ -9,10 +9,10 @@
     <pd:starter name="JMS Queue Receiver">
         <pd:type>com.tibco.plugin.jms.JMSQueueEventSource</pd:type>
         <pd:resourceType>ae.activities.JMSQueueEventSource</pd:resourceType>
-        <pd:x>106</pd:x>
+        <pd:x>97</pd:x>
         <pd:y>184</pd:y>
         <config>
-            <PermittedMessageType>Text</PermittedMessageType>
+            <PermittedMessageType>XML Text</PermittedMessageType>
             <SessionAttributes>
                 <transacted>false</transacted>
                 <acknowledgeMode>2</acknowledgeMode>
@@ -25,6 +25,7 @@
                 <JMSPriority>4</JMSPriority>
             </ConfigurableHeaders>
             <ConnectionReference>/ConnectionsLab1/JMS Connection.sharedjmscon</ConnectionReference>
+            <OutDataxsdString ref="pfx:client"/>
         </config>
         <pd:inputBindings/>
     </pd:starter>
@@ -34,27 +35,10 @@
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1618477038072</pd:targetNamespace>
-    <pd:activity name="Parse XML">
-        <pd:type>com.tibco.plugin.xml.XMLParseActivity</pd:type>
-        <pd:resourceType>ae.activities.XMLParseActivity</pd:resourceType>
-        <pd:x>243</pd:x>
-        <pd:y>184</pd:y>
-        <config>
-            <inputStyle>text</inputStyle>
-            <xsdVersion>default</xsdVersion>
-            <validateOutput>false</validateOutput>
-            <term ref="pfx:client"/>
-        </config>
-        <pd:inputBindings>
-            <xmlString>
-                <xsl:value-of select="$JMS-Queue-Receiver/ns:ActivityOutput/Body"/>
-            </xmlString>
-        </pd:inputBindings>
-    </pd:activity>
     <pd:activity name="Create CSV File">
         <pd:type>com.tibco.plugin.file.FileCreateActivity</pd:type>
         <pd:resourceType>ae.activities.FileCreateActivity</pd:resourceType>
-        <pd:x>578</pd:x>
+        <pd:x>575</pd:x>
         <pd:y>186</pd:y>
         <config>
             <overwrite>true</overwrite>
@@ -62,7 +46,7 @@
         <pd:inputBindings>
             <ns1:CreateActivityInputClass>
                 <fileName>
-                    <xsl:value-of select="concat($_globalVariables/ns2:GlobalVariables/lab2/pathToCSV,$Parse-XML/pfx:client/pfx:nom_client,&quot;_&quot;,$Parse-XML/pfx:client/pfx:prenom,&quot;_&quot;,$Parse-XML/pfx:client/pfx:date_ajout,&quot;_&quot;,$Parse-XML/pfx:client/pfx:id_client,&quot;.csv&quot;)"/>
+                    <xsl:value-of select="concat(&#xA;&#x9;$_globalVariables/ns2:GlobalVariables/lab2/pathToCSV,&#xA;&#x9;$Parse-XML/pfx:client/pfx:nom_client,&quot;_&quot;,&#xA;&#x9;$Parse-XML/pfx:client/pfx:prenom,&quot;_&quot;,&#xA;&#x9;translate($Parse-XML/pfx:client/pfx:date_ajout, &quot;-&quot;, &quot;&quot;),&quot;_&quot;,&#xA;&#x9;$Parse-XML/pfx:client/pfx:id_client,&quot;.csv&quot;&#xA;)"/>
                 </fileName>
             </ns1:CreateActivityInputClass>
         </pd:inputBindings>
@@ -90,8 +74,8 @@
     <pd:activity name="LoggingProcess">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>456</pd:x>
-        <pd:y>186</pd:y>
+        <pd:x>450</pd:x>
+        <pd:y>182</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -196,8 +180,8 @@
     <pd:activity name="SetVariable">
         <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
         <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
-        <pd:x>338</pd:x>
-        <pd:y>186</pd:y>
+        <pd:x>318</pd:x>
+        <pd:y>182</pd:y>
         <config>
             <showResult>true</showResult>
             <variableConfig>/SharedVars/clientID.sharedvariable</variableConfig>
@@ -218,13 +202,23 @@
         </config>
         <pd:inputBindings/>
     </pd:activity>
-    <pd:transition>
-        <pd:from>JMS Queue Receiver</pd:from>
-        <pd:to>Parse XML</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
+    <pd:activity name="Parse XML">
+        <pd:type>com.tibco.plugin.xml.XMLParseActivity</pd:type>
+        <pd:resourceType>ae.activities.XMLParseActivity</pd:resourceType>
+        <pd:x>210</pd:x>
+        <pd:y>182</pd:y>
+        <config>
+            <inputStyle>text</inputStyle>
+            <xsdVersion>default</xsdVersion>
+            <validateOutput>false</validateOutput>
+            <term ref="pfx:client"/>
+        </config>
+        <pd:inputBindings>
+            <xmlString>
+                <xsl:value-of select="tib:render-xml($JMS-Queue-Receiver/ns:ActivityOutput/Body/pfx:client)"/>
+            </xmlString>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>Write in CSV File</pd:from>
         <pd:to>Log success End of process</pd:to>
@@ -275,13 +269,6 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Parse XML</pd:from>
-        <pd:to>SetVariable</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
         <pd:from>ClientiD</pd:from>
         <pd:to>Logging Errors</pd:to>
         <pd:lineType>Default</pd:lineType>
@@ -298,6 +285,20 @@
     <pd:transition>
         <pd:from>SetVariable</pd:from>
         <pd:to>LoggingProcess</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JMS Queue Receiver</pd:from>
+        <pd:to>Parse XML</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse XML</pd:from>
+        <pd:to>SetVariable</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

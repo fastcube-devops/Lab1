@@ -3,11 +3,11 @@
 	<globalVariables>
 		<globalVariable>
 			<name>pathToCSV</name>
-			<value>C:\Users\Dev\Documents\LABS\lab2\csv\</value>
+			<value>C:\Users\Dev\Documents\repos\Lab1\csv\</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>String</type>
-			<modTime>1618480221346</modTime>
+			<modTime>1618583129852</modTime>
 		</globalVariable>
 	</globalVariables>
 </repository>
