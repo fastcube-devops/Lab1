@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository:repository xmlns:Repository="http://www.tibco.com/xmlns/repo/types/2002">
+    <name name="LibraryBuilder">
+        <version>2</version>
+        <author>Dev</author>
+        <fileLocation>C:\Users\Dev\ProjectLibrary.projlib</fileLocation>
+        <resources>/Schema/SchemaClient.xsd</resources>
+    </name>
+</Repository:repository>

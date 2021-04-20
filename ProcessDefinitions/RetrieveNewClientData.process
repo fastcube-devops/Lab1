@@ -29,7 +29,7 @@
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:x>295</pd:x>
-        <pd:y>142</pd:y>
+        <pd:y>141</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -37,14 +37,14 @@
             <emptyStrAsNil>false</emptyStrAsNil>
             <statement>select * from clients where flag='N'
 </statement>
-            <jdbcSharedConfig>/Connections/DB_Connection.sharedjdbc</jdbcSharedConfig>
+            <jdbcSharedConfig>/Connections/Connection_JDBC.sharedjdbc</jdbcSharedConfig>
             <Prepared_Param_DataType/>
             <oraObjects/>
             <oraTables/>
             <QueryOutputCachedSchemaColumns>ID_CLIENT</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
             <QueryOutputCachedSchemaColumns>NOM_CLIENT</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
@@ -122,7 +122,7 @@
             <pd:type>com.tibco.plugin.jms.JMSQueueSendActivity</pd:type>
             <pd:resourceType>ae.activities.JMSQueueSendActivity</pd:resourceType>
             <pd:x>543</pd:x>
-            <pd:y>147</pd:y>
+            <pd:y>146</pd:y>
             <config>
                 <PermittedMessageType>XML Text</PermittedMessageType>
                 <SessionAttributes>
@@ -162,15 +162,9 @@
                             <pfx:date_ajout>
                                 <xsl:value-of select="$clientC/Record/DATE_AJOUT"/>
                             </pfx:date_ajout>
-                            <pfx:nom_fichier>
-                                <xsl:value-of select="$clientC/Record/NOM_FICHIER"/>
-                            </pfx:nom_fichier>
                             <pfx:date_update>
                                 <xsl:value-of select="$clientC/Record/DATE_UPDATE"/>
                             </pfx:date_update>
-                            <pfx:flag>
-                                <xsl:value-of select="$clientC/Record/FLAG"/>
-                            </pfx:flag>
                         </pfx:infoClient>
                     </Body>
                 </ns0:ActivityInput>

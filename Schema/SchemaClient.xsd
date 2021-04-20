@@ -14,9 +14,7 @@
 				<xs:element ref="adresse"/>
 				<xs:element ref="profession"/>
 				<xs:element ref="date_ajout"/>
-				<xs:element ref="nom_fichier"/>
 				<xs:element ref="date_update"/>
-				<xs:element ref="flag"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -25,7 +23,6 @@
 	<xs:element name="id_client" type="xs:string"/>
 	<xs:element name="date_ajout" type="xs:string"/>
 	<xs:element name="date_update" type="xs:string"/>
-	<xs:element name="flag" type="xs:string"/>
 	<xs:element name="adresse" type="xs:string"/>
 	<xs:element name="profession" type="xs:string"/>
 </xs:schema>

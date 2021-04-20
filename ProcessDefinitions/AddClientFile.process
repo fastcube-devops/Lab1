@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx="http://www.tibco.com/schemas/lab1/Schema/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:ns2="http://www.tibco.com/pe/DeployedVarsType" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:ns4="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:ns3="http://www.tibco.com/pe/EngineTypes">
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx="http://www.tibco.com/schemas/lab1/Schema/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:ns2="http://www.tibco.com/pe/DeployedVarsType" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:ns4="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:ns3="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/lab1/Schema/Schema.xsd" schemaLocation="/Schema/SchemaClient.xsd"/>
     <pd:name>ProcessDefinitions/AddClientFile.process</pd:name>
     <pd:startName>JMS Queue Receiver data client</pd:startName>
@@ -9,8 +9,8 @@
     <pd:starter name="JMS Queue Receiver data client">
         <pd:type>com.tibco.plugin.jms.JMSQueueEventSource</pd:type>
         <pd:resourceType>ae.activities.JMSQueueEventSource</pd:resourceType>
-        <pd:x>85</pd:x>
-        <pd:y>101</pd:y>
+        <pd:x>87</pd:x>
+        <pd:y>94</pd:y>
         <config>
             <PermittedMessageType>XML Text</PermittedMessageType>
             <SessionAttributes>
@@ -50,7 +50,7 @@
                     <xsl:value-of select="$creer-fichier-csv/ns1:CreateActivityOutputClass/fileInfo/fullName"/>
                 </fileName>
                 <textContent>
-                    <xsl:value-of select="concat($JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:prenom, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:adresse,',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:profession, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_ajout, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom_fichier, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_update, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:flag)"/>
+                    <xsl:value-of select="concat($JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:prenom, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:adresse,',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:profession, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_ajout, ',',$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_update)"/>
                 </textContent>
             </ns1:WriteActivityInputTextClass>
         </pd:inputBindings>
@@ -64,18 +64,35 @@
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
-            <jdbcSharedConfig>/Connections/DB_Connection.sharedjdbc</jdbcSharedConfig>
-            <statement>update clients set date_update = Current_date , flag = 'N'</statement>
+            <jdbcSharedConfig>/Connections/Connection_JDBC.sharedjdbc</jdbcSharedConfig>
+            <statement>update clients set date_update = Current_date , flag = 'N' where id_client=?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>id_client</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
-            <jdbcUpdateActivityInput/>
+            <jdbcUpdateActivityInput>
+                <id_client>
+                    <xsl:choose>
+                        <xsl:when test="exists($JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client)">
+                            <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </id_client>
+            </jdbcUpdateActivityInput>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="creer fichier csv">
         <pd:type>com.tibco.plugin.file.FileCreateActivity</pd:type>
         <pd:resourceType>ae.activities.FileCreateActivity</pd:resourceType>
-        <pd:x>257</pd:x>
-        <pd:y>91</pd:y>
+        <pd:x>365</pd:x>
+        <pd:y>84</pd:y>
         <config>
             <createMissingDirectories>false</createMissingDirectories>
             <overwrite>true</overwrite>
@@ -92,7 +109,7 @@
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
         <pd:x>1108</pd:x>
-        <pd:y>93</pd:y>
+        <pd:y>98</pd:y>
         <config>
             <processName>/ProcessDefinitions/logging.process</processName>
         </config>
@@ -141,8 +158,8 @@
     <pd:activity name="initLogClient">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>394</pd:x>
-        <pd:y>90</pd:y>
+        <pd:x>435</pd:x>
+        <pd:y>268</pd:y>
         <config>
             <processName>/ProcessDefinitions/logging.process</processName>
         </config>
@@ -163,7 +180,7 @@
             </ns4:LogInfo>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="Catch">
+    <pd:activity name="Catch all">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
         <pd:x>1111</pd:x>
@@ -183,7 +200,20 @@
             <processName>/ProcessDefinitions/logging.process</processName>
         </config>
         <pd:inputBindings>
-            <ns4:LogInfo/>
+            <ns4:LogInfo>
+                <ns4:idtech>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns4:idtech>
+                <ns4:idfonc>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                </ns4:idfonc>
+                <ns4:status>
+                    <xsl:value-of select="'echec'"/>
+                </ns4:status>
+                <ns4:logmessage>
+                    <xsl:value-of select="$_error/ns3:ErrorReport/Msg"/>
+                </ns4:logmessage>
+            </ns4:LogInfo>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="Confirm">
@@ -196,7 +226,7 @@
         </config>
         <pd:inputBindings/>
     </pd:activity>
-    <pd:activity name="Generate Error">
+    <pd:activity name="Error remplir fichier">
         <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
         <pd:resourceType>ae.activities.throw</pd:resourceType>
         <pd:x>551</pd:x>
@@ -217,27 +247,102 @@
             </ns5:ActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="Catch-1">
+    <pd:activity name="Catch specific error">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>944</pd:x>
-        <pd:y>409</pd:y>
+        <pd:x>934</pd:x>
+        <pd:y>551</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <fault>localname=FileIOException namespace=http://schemas.tibco.com/bw/plugins/file/5.0/fileExceptions</fault>
         </config>
         <pd:inputBindings/>
     </pd:activity>
+    <pd:activity name="Error parse fichier">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>235</pd:x>
+        <pd:y>267</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns5:ActivityInput>
+                <message>
+                    <xsl:value-of select="$_error/ns3:ErrorReport/Msg"/>
+                </message>
+                <xsl:if test="$_error/ns3:ErrorReport/MsgCode">
+                    <messageCode>
+                        <xsl:value-of select="$_error/ns3:ErrorReport/MsgCode"/>
+                    </messageCode>
+                </xsl:if>
+            </ns5:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="logging-1">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>936</pd:x>
+        <pd:y>409</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns4:LogInfo>
+                <ns4:idtech>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns4:idtech>
+                <ns4:idfonc>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                </ns4:idfonc>
+                <ns4:status>
+                    <xsl:value-of select="'Error'"/>
+                </ns4:status>
+                <ns4:logmessage>
+                    <xsl:value-of select="$_error/ns3:ErrorReport/Msg"/>
+                </ns4:logmessage>
+            </ns4:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render XML">
+        <pd:type>com.tibco.plugin.xml.XMLRendererActivity</pd:type>
+        <pd:resourceType>ae.activities.XMLRendererActivity</pd:resourceType>
+        <pd:x>229</pd:x>
+        <pd:y>86</pd:y>
+        <config>
+            <renderAsText>text</renderAsText>
+            <validateInput>true</validateInput>
+            <term ref="pfx:infoClient"/>
+        </config>
+        <pd:inputBindings>
+            <pfx:infoClient>
+                <pfx:id_client>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
+                </pfx:id_client>
+                <pfx:nom>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:nom"/>
+                </pfx:nom>
+                <pfx:prenom>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:prenom"/>
+                </pfx:prenom>
+                <pfx:adresse>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:adresse"/>
+                </pfx:adresse>
+                <pfx:profession>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:profession"/>
+                </pfx:profession>
+                <pfx:date_ajout>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_ajout"/>
+                </pfx:date_ajout>
+                <pfx:date_update>
+                    <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:date_update"/>
+                </pfx:date_update>
+            </pfx:infoClient>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>remplir fichier</pd:from>
         <pd:to>Update client</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>JMS Queue Receiver data client</pd:from>
-        <pd:to>creer fichier csv</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -287,7 +392,7 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Catch</pd:from>
+        <pd:from>Catch all</pd:from>
         <pd:to>logging</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -309,16 +414,44 @@
     </pd:transition>
     <pd:transition>
         <pd:from>remplir fichier</pd:from>
-        <pd:to>Generate Error</pd:to>
+        <pd:to>Error remplir fichier</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>error</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Catch-1</pd:from>
+        <pd:from>Catch specific error</pd:from>
+        <pd:to>logging-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>logging-1</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JMS Queue Receiver data client</pd:from>
+        <pd:to>Render XML</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render XML</pd:from>
+        <pd:to>creer fichier csv</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render XML</pd:from>
+        <pd:to>Error parse fichier</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
     </pd:transition>
 </pd:ProcessDefinition>
