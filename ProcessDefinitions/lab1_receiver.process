@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:ns12="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/DeployedVarsType" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:ns3="http://www.tibco.com/pe/EngineTypes">
-    <xsd:import namespace="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" schemaLocation="/SchemaLab1/Client.xsd"/>
-    <pd:name>ProcessDefinition/lab1_receiver.process</pd:name>
+    <xsd:import namespace="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" schemaLocation="/Schemas/Client.xsd"/>
+    <pd:name>ProcessDefinitions/lab1_receiver.process</pd:name>
     <pd:startName>JMS Queue Receiver</pd:startName>
     <pd:startX>0</pd:startX>
     <pd:startY>0</pd:startY>
@@ -24,13 +24,13 @@
                 <JMSExpiration>0</JMSExpiration>
                 <JMSPriority>4</JMSPriority>
             </ConfigurableHeaders>
-            <ConnectionReference>/ConnectionsLab1/JMS Connection.sharedjmscon</ConnectionReference>
+            <ConnectionReference>/Connections/JMS Connection.sharedjmscon</ConnectionReference>
             <OutDataxsdString ref="pfx:client"/>
         </config>
         <pd:inputBindings/>
     </pd:starter>
     <pd:endName>End</pd:endName>
-    <pd:endX>1084</pd:endX>
+    <pd:endX>1189</pd:endX>
     <pd:endY>184</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
@@ -38,8 +38,8 @@
     <pd:activity name="Create CSV File">
         <pd:type>com.tibco.plugin.file.FileCreateActivity</pd:type>
         <pd:resourceType>ae.activities.FileCreateActivity</pd:resourceType>
-        <pd:x>575</pd:x>
-        <pd:y>186</pd:y>
+        <pd:x>576</pd:x>
+        <pd:y>184</pd:y>
         <config>
             <overwrite>true</overwrite>
         </config>
@@ -74,7 +74,7 @@
     <pd:activity name="LoggingProcess">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>450</pd:x>
+        <pd:x>451</pd:x>
         <pd:y>182</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
@@ -93,14 +93,17 @@
                 <ns12:logmessage>
                     <xsl:value-of select="concat(&quot;Start process  : &quot;,   $_processContext/ns3:ProcessContext/ProcessId)"/>
                 </ns12:logmessage>
+                <ns12:idProcess>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns12:idProcess>
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="Logging Errors">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>949</pd:x>
-        <pd:y>315</pd:y>
+        <pd:x>1048</pd:x>
+        <pd:y>309</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -118,14 +121,17 @@
                 <ns12:logmessage>
                     <xsl:value-of select="if(string-length( $Catch/exceptiondata/*)>254) then substring($Catch/exceptiondata/*, 1, 254) else $Catch/exceptiondata/*"/>
                 </ns12:logmessage>
+                <ns12:idProcess>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns12:idProcess>
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>601</pd:x>
-        <pd:y>312</pd:y>
+        <pd:x>699</pd:x>
+        <pd:y>307</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -135,8 +141,8 @@
     <pd:activity name="Log success End of process">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>834</pd:x>
-        <pd:y>192</pd:y>
+        <pd:x>967</pd:x>
+        <pd:y>194</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -154,14 +160,17 @@
                 <ns12:logmessage>
                     <xsl:value-of select="concat(&quot;End of process : &quot;,$_processContext/ns3:ProcessContext/ProcessId)"/>
                 </ns12:logmessage>
+                <ns12:idProcess>
+                    <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
+                </ns12:idProcess>
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="Confirm">
         <pd:type>com.tibco.pe.core.ConfirmActivity</pd:type>
         <pd:resourceType>activity.confirm</pd:resourceType>
-        <pd:x>959</pd:x>
-        <pd:y>182</pd:y>
+        <pd:x>1072</pd:x>
+        <pd:y>185</pd:y>
         <config>
             <ConfirmEvent>JMS Queue Receiver</ConfirmEvent>
         </config>
@@ -170,8 +179,8 @@
     <pd:activity name="ClientiD">
         <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
         <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
-        <pd:x>789</pd:x>
-        <pd:y>315</pd:y>
+        <pd:x>877</pd:x>
+        <pd:y>308</pd:y>
         <config>
             <variableConfig>/SharedVars/clientID.sharedvariable</variableConfig>
         </config>
@@ -195,8 +204,8 @@
     <pd:activity name="Confirm2">
         <pd:type>com.tibco.pe.core.ConfirmActivity</pd:type>
         <pd:resourceType>activity.confirm</pd:resourceType>
-        <pd:x>1080</pd:x>
-        <pd:y>315</pd:y>
+        <pd:x>1186</pd:x>
+        <pd:y>309</pd:y>
         <config>
             <ConfirmEvent>JMS Queue Receiver</ConfirmEvent>
         </config>
@@ -219,9 +228,51 @@
             </xmlString>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="JDBC Update">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>834</pd:x>
+        <pd:y>185</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/Connections/DB_Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>update clients
+set flag=?,date_update=?
+where id_client=?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>flag</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>date_update</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>id_client</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <flag>
+                    <xsl:value-of select="&quot;C&quot;"/>
+                </flag>
+                <date_update>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </date_update>
+                <id_client>
+                    <xsl:value-of select="$Parse-XML/pfx:client/pfx:id_client"/>
+                </id_client>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>Write in CSV File</pd:from>
-        <pd:to>Log success End of process</pd:to>
+        <pd:to>JDBC Update</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -299,6 +350,13 @@
     <pd:transition>
         <pd:from>Parse XML</pd:from>
         <pd:to>SetVariable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Update</pd:from>
+        <pd:to>Log success End of process</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

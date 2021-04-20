@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd">
-    <xsd:import namespace="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" schemaLocation="/SchemaLab1/Client.xsd"/>
-    <pd:name>ProcessDefinition/lab1_sender.process</pd:name>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd">
+    <xsd:import namespace="http://www.tibco.com/schemas/lab2/SchemaLab2/Schema.xsd" schemaLocation="/Schemas/Client.xsd"/>
+    <pd:name>ProcessDefinitions/lab1_sender.process</pd:name>
     <pd:startName>Timer</pd:startName>
     <pd:startX>0</pd:startX>
     <pd:startY>0</pd:startY>
@@ -9,8 +9,8 @@
     <pd:starter name="Timer">
         <pd:type>com.tibco.plugin.timer.TimerEventSource</pd:type>
         <pd:resourceType>ae.activities.timer</pd:resourceType>
-        <pd:x>77</pd:x>
-        <pd:y>162</pd:y>
+        <pd:x>80</pd:x>
+        <pd:y>160</pd:y>
         <config>
             <StartTime>1618413721000</StartTime>
             <Frequency>true</Frequency>
@@ -28,8 +28,8 @@
     <pd:activity name="retrieve new client">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>331</pd:x>
-        <pd:y>164</pd:y>
+        <pd:x>330</pd:x>
+        <pd:y>168</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -156,8 +156,8 @@ tablecount=0&#xD;
         <pd:activity name="JMS Queue Sender">
             <pd:type>com.tibco.plugin.jms.JMSQueueSendActivity</pd:type>
             <pd:resourceType>ae.activities.JMSQueueSendActivity</pd:resourceType>
-            <pd:x>673</pd:x>
-            <pd:y>155</pd:y>
+            <pd:x>675</pd:x>
+            <pd:y>157</pd:y>
             <config>
                 <PermittedMessageType>XML Text</PermittedMessageType>
                 <SessionAttributes>
@@ -172,11 +172,11 @@ tablecount=0&#xD;
                     <JMSPriority>4</JMSPriority>
                 </ConfigurableHeaders>
                 <DeliveryDelay>0</DeliveryDelay>
-                <ConnectionReference>/ConnectionsLab1/JMS Connection.sharedjmscon</ConnectionReference>
+                <ConnectionReference>/Connections/JMS Connection.sharedjmscon</ConnectionReference>
                 <InDataxsdString ref="pfx:client"/>
             </config>
             <pd:inputBindings>
-                <ns0:ActivityInput xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/jms">
+                <ns0:ActivityInput>
                     <Body>
                         <xsl:copy-of select="$current/pfx:client"/>
                     </Body>
@@ -206,13 +206,16 @@ tablecount=0&#xD;
                 <ns2:logmessage>
                     <xsl:value-of select="concat(&quot;Start process  : &quot;,   $_processContext/ns:ProcessContext/ProcessId)"/>
                 </ns2:logmessage>
+                <ns2:idProcess>
+                    <xsl:value-of select="$_processContext/ns:ProcessContext/ProcessId"/>
+                </ns2:idProcess>
             </ns2:LogInfo>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="Logging Errors">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1109</pd:x>
+        <pd:x>1110</pd:x>
         <pd:y>307</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
@@ -231,6 +234,9 @@ tablecount=0&#xD;
                 <ns2:logmessage>
                     <xsl:value-of select="if(string-length( $Catch/exceptiondata/*)>254) then substring($Catch/exceptiondata/*, 1, 254) else $Catch/exceptiondata/*"/>
                 </ns2:logmessage>
+                <ns2:idProcess>
+                    <xsl:value-of select="$_processContext/ns:ProcessContext/ProcessId"/>
+                </ns2:idProcess>
             </ns2:LogInfo>
         </pd:inputBindings>
     </pd:activity>
@@ -267,6 +273,9 @@ tablecount=0&#xD;
                 <ns2:logmessage>
                     <xsl:value-of select="concat(&quot;End of process : &quot;,$_processContext/ns:ProcessContext/ProcessId)"/>
                 </ns2:logmessage>
+                <ns2:idProcess>
+                    <xsl:value-of select="$_processContext/ns:ProcessContext/ProcessId"/>
+                </ns2:idProcess>
             </ns2:LogInfo>
         </pd:inputBindings>
     </pd:activity>
