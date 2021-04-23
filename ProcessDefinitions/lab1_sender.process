@@ -13,8 +13,8 @@
         <pd:y>160</pd:y>
         <config>
             <StartTime>1618413721000</StartTime>
-            <Frequency>true</Frequency>
-            <TimeInterval>10</TimeInterval>
+            <Frequency>false</Frequency>
+            <TimeInterval>30</TimeInterval>
             <FrequencyIndex>Second</FrequencyIndex>
         </config>
         <pd:inputBindings/>
@@ -36,7 +36,7 @@
             <maxRows>10</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/Connections/DB_Connection.sharedjdbc</jdbcSharedConfig>
-            <statement>select id_client, nom_client, prenom, adresse, date_ajout, profession, flag from clients</statement>
+            <statement>select id_client, nom_client, prenom, adresse, date_ajout, profession, flag from clients where flag='N'</statement>
             <wizardData>#Wed Apr 14 17:39:22 CEST 2021&#xD;
 useSchemaInFQN=true&#xD;
 columncount=0&#xD;
@@ -156,7 +156,7 @@ tablecount=0&#xD;
         <pd:activity name="JMS Queue Sender">
             <pd:type>com.tibco.plugin.jms.JMSQueueSendActivity</pd:type>
             <pd:resourceType>ae.activities.JMSQueueSendActivity</pd:resourceType>
-            <pd:x>675</pd:x>
+            <pd:x>674</pd:x>
             <pd:y>157</pd:y>
             <config>
                 <PermittedMessageType>XML Text</PermittedMessageType>
@@ -232,7 +232,7 @@ tablecount=0&#xD;
                     <xsl:value-of select="&quot;error&quot;"/>
                 </ns2:status>
                 <ns2:logmessage>
-                    <xsl:value-of select="if(string-length( $Catch/exceptiondata/*)>254) then substring($Catch/exceptiondata/*, 1, 254) else $Catch/exceptiondata/*"/>
+                    <xsl:value-of select="$Catch/exceptiondata/*"/>
                 </ns2:logmessage>
                 <ns2:idProcess>
                     <xsl:value-of select="$_processContext/ns:ProcessContext/ProcessId"/>

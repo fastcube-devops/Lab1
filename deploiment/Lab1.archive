@@ -15,11 +15,15 @@
             <authorProperty>Dev</authorProperty>
             <processProperty>/ProcessDefinitions/lab1_sender.process</processProperty>
         </processArchive>
-        <versionProperty>3</versionProperty>
+        <versionProperty>7</versionProperty>
         <authorProperty>Dev</authorProperty>
         <addServiceSettableGvars>true</addServiceSettableGvars>
         <name>Lab1</name>
-        <designer/>
+        <designer>
+            <lockedProperties/>
+            <fixedChildren/>
+            <resourceDescriptions/>
+        </designer>
         <fileLocationProperty>C:\Users\Dev\Documents\repos\buildLab1\Lab1.ear</fileLocationProperty>
     </enterpriseArchive>
 </Repository:repository>

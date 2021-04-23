@@ -119,7 +119,7 @@
                     <xsl:value-of select="&quot;error&quot;"/>
                 </ns12:status>
                 <ns12:logmessage>
-                    <xsl:value-of select="if(string-length( $Catch/exceptiondata/*)>254) then substring($Catch/exceptiondata/*, 1, 254) else $Catch/exceptiondata/*"/>
+                    <xsl:value-of select="$Catch/exceptiondata/*"/>
                 </ns12:logmessage>
                 <ns12:idProcess>
                     <xsl:value-of select="$_processContext/ns3:ProcessContext/ProcessId"/>
