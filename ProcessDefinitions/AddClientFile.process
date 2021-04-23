@@ -125,7 +125,7 @@
                     <xsl:value-of select="'success'"/>
                 </ns4:status>
                 <ns4:logmessage>
-                    <xsl:value-of select="'N/A'"/>
+                    <xsl:value-of select="concat('process executed with success id: ', $_processContext/ns3:ProcessContext/ProcessId)"/>
                 </ns4:logmessage>
             </ns4:LogInfo>
         </pd:inputBindings>
@@ -172,10 +172,10 @@
                     <xsl:value-of select="$JMS-Queue-Receiver-data-client/ns:ActivityOutput/Body/pfx:infoClient/pfx:id_client"/>
                 </ns4:idfonc>
                 <ns4:status>
-                    <xsl:value-of select="'init'"/>
+                    <xsl:value-of select="'initial'"/>
                 </ns4:status>
                 <ns4:logmessage>
-                    <xsl:value-of select="'N/A'"/>
+                    <xsl:value-of select="concat('initial process id: ',$_processContext/ns3:ProcessContext/ProcessId)"/>
                 </ns4:logmessage>
             </ns4:LogInfo>
         </pd:inputBindings>

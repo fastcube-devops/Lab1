@@ -15,7 +15,7 @@
             <authorProperty>Dev</authorProperty>
             <processProperty>/ProcessDefinitions/RetrieveNewClientData.process</processProperty>
         </processArchive>
-        <versionProperty>8</versionProperty>
+        <versionProperty>10</versionProperty>
         <authorProperty>faiza</authorProperty>
         <addServiceSettableGvars>true</addServiceSettableGvars>
         <name>lab1</name>
